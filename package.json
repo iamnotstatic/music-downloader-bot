@@ -1,0 +1,24 @@
+{
+  "name": "music-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "env-cmd -f ./config/dev.env nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.20.0",
+    "cheerio": "^1.0.0-rc.3",
+    "express": "^4.17.1",
+    "node-telegram-bot-api": "^0.50.0",
+    "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0",
+    "nodemon": "^2.0.4"
+  }
+}
