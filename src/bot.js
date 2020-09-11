@@ -1,10 +1,11 @@
 const TelegramBot = require('node-telegram-bot-api');
 const bot = new TelegramBot(process.env.BOT_APIKEY, { polling: true });
 const axios = require('axios');
+const TinyURL = require('tinyurl');
 
 // Process Music download
-bot.onText(/\/music (.+)/, (msg, match) => {
-  let music = match[1];
+bot.on('message', (msg) => {
+  let music = msg.text;
   let chatId = msg.chat.id;
 
   // Get Data
@@ -16,12 +17,19 @@ bot.onText(/\/music (.+)/, (msg, match) => {
       });
 
       const res = await axios.get(
-        `http://youtube-scrape.herokuapp.com/api/search?q=${music}/`
+        `http://youtube-scrape.herokuapp.com/api/search?q=${music} music/`
       );
 
-      getDownloadURL(res.data.results);
+      if (res.data.results.length === 0) {
+        bot.sendMessage(
+          chatId,
+          `Bad request, Please check the title ${music} and try again`
+        );
+      } else {
+        getDownloadURL(res.data.results);
+      }
     } catch (error) {
-      console.log({ error });
+      console.log(error);
       bot.sendMessage(
         chatId,
         `Bad request, Please check the title ${music} and try again`
@@ -29,29 +37,35 @@ bot.onText(/\/music (.+)/, (msg, match) => {
     }
   })();
 
+  // Return response to user with information and URL
   const getDownloadURL = (data) => {
-    const size = 5;
-    const limited = data.splice(0, size);
-    limited.forEach((music) => {
-      const {
-        title,
-        url,
-        duration,
-        thumbnail_src,
-        views,
-        upload_date,
-      } = music && music.video;
+    data.splice(0, 5).forEach((music) => {
+      const { title, url, duration, thumbnail_src, views, upload_date } =
+        music.video || music.radio || music.playlist || music.channel;
 
-      const options = {
-        caption: `\nTitle: ${title} \nDuration: ${duration} \nViews: ${views} \nRelease Date: ${upload_date} \n \n🚀 Download Here: https://cutepup.club/${url} \n \nDownload your music with ease here http://t.me/musichive_bot`,
-        reply_markup: JSON.stringify({
-          inline_keyboard: [
-            [{ text: 'Download', url: `https://cutepup.club/${url}` }],
-          ],
-        }),
-      };
+      // Initial URL
+      const initURL = `https://cutepup.club/${url}`;
 
-      bot.sendPhoto(chatId, thumbnail_src, options);
+      // shorten Init URL
+      TinyURL.shorten(initURL, function (res, err) {
+        if (err) console.log(err);
+
+        // Shortend URL
+        let shortendURL = res;
+
+        const options = {
+          caption: `\nTitle: ${title} ${
+            duration !== undefined ? `\nDuration: ${duration}` : ''
+          } ${views !== undefined ? `\nViews: ${views}` : ''} ${
+            upload_date !== undefined ? `\nRelease Date: ${upload_date}` : ''
+          } \n \n🚀 Download Here: ${shortendURL} \n \nDownload your music with ease here http://t.me/musichive_bot`,
+          reply_markup: JSON.stringify({
+            inline_keyboard: [[{ text: 'Download', url: shortendURL }]],
+          }),
+        };
+
+        bot.sendPhoto(chatId, thumbnail_src, options);
+      });
     });
   };
 });

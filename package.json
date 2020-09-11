@@ -15,7 +15,8 @@
     "cheerio": "^1.0.0-rc.3",
     "express": "^4.17.1",
     "node-telegram-bot-api": "^0.50.0",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "tinyurl": "^1.1.7"
   },
   "devDependencies": {
     "env-cmd": "^10.1.0",
