@@ -4,7 +4,7 @@
   "description": "Download music according to request with ease .",
   "main": "server.js",
   "scripts": {
-    "start": "node server/index.js",
+    "start": "node src/server.js",
     "dev": "env-cmd -f ./config/dev.env nodemon src/server.js"
   },
   "keywords": [
