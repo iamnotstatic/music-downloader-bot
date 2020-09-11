@@ -27,7 +27,7 @@ bot.on('message', (msg) => {
         });
 
         const res = await axios.get(
-          `http://youtube-scrape.herokuapp.com/api/search?q=${music} music/`
+          `http://youtube-scrape.herokuapp.com/api/search?q=${music} audio/`
         );
 
         if (res.data.results.length === 0) {

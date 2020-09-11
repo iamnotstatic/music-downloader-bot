@@ -1,6 +1,6 @@
 const express = require('express');
-const packageInfo = require('./package.json');
-require('./src/bot');
+const packageInfo = require('../package.json');
+require('./bot');
 
 const app = express();
 
