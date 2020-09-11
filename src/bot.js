@@ -20,7 +20,12 @@ bot.on('message', (msg) => {
   let music = msg.text;
   let chatId = msg.chat.id;
 
-  if (music !== '/start' && music !== '/help' && music !== '/stats') {
+  if (
+    music !== '/start' &&
+    music !== '/help' &&
+    music !== '/stats' &&
+    music !== '/donate'
+  ) {
     // store in object
     pingCount++;
 
@@ -108,6 +113,18 @@ bot.onText(/\/stats/, (msg, match) => {
       parse_mode: 'Markdown',
     });
   })();
+});
+
+// Get instructions
+bot.onText(/\/donate/, (msg, match) => {
+  let chatId = msg.chat.id;
+  bot.sendMessage(
+    chatId,
+    `Music Downloader Bot is free to use meaning you don't ever pay to use the service. However, we accept donations to keep our servers and scrapers working. Feel free to donate to the service with cryptocurrency ❤️ \n\nBitcoin: *${process.env.BitCOIN_ADDRESS}* \n\nEthereum: *${process.env.ETHEREUM_ADDRESS}* \n\nBitcoin Cash: *${process.env.BITCOINCASH_ADDRESS}*`,
+    {
+      parse_mode: 'Markdown',
+    }
+  );
 });
 
 // Get instructions
