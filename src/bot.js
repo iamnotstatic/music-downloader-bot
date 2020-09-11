@@ -2,7 +2,10 @@ const TelegramBot = require('node-telegram-bot-api');
 const bot = new TelegramBot(process.env.BOT_APIKEY, { polling: true });
 const axios = require('axios');
 const TinyURL = require('tinyurl');
+const fs = require('fs').promises;
+const FILE_PATH = 'stats.txt';
 
+let pingCount = 0;
 // Welcome Message
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(
@@ -17,7 +20,19 @@ bot.on('message', (msg) => {
   let music = msg.text;
   let chatId = msg.chat.id;
 
-  if (music !== '/start' && music !== '/help') {
+  if (music !== '/start' && music !== '/help' && music !== '/stats') {
+    // store in object
+    pingCount++;
+
+    // sAVE Request
+    (async () => {
+      await fs.writeFile(
+        FILE_PATH,
+        JSON.stringify({ count: pingCount }),
+        'utf8'
+      );
+    })();
+
     // Get Data
     (async () => {
       try {
@@ -81,9 +96,22 @@ bot.on('message', (msg) => {
   }
 });
 
+// Get number of Requets
+bot.onText(/\/stats/, (msg, match) => {
+  let chatId = msg.chat.id;
+
+  (async () => {
+    const res = await fs.readFile(FILE_PATH, 'utf8');
+    const intData = JSON.parse(res);
+
+    bot.sendMessage(chatId, `Number of Requests: ${intData.count}`, {
+      parse_mode: 'Markdown',
+    });
+  })();
+});
+
 // Get instructions
 bot.onText(/\/help/, (msg, match) => {
-  let music = match[1];
   let chatId = msg.chat.id;
   bot.sendMessage(
     chatId,
@@ -93,3 +121,5 @@ bot.onText(/\/help/, (msg, match) => {
     }
   );
 });
+
+bot.on('polling_error', (err) => console.log(err));
