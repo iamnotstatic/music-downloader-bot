@@ -1,14 +1,19 @@
 {
   "name": "music-bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Download music according to request with ease .",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "env-cmd -f ./config/dev.env nodemon index.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "Telegram",
+    "Bot",
+    "Music",
+    "Download"
+  ],
+  "author": "Abdulfatai Suleiman aka iamnotstatic",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.20.0",
