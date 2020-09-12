@@ -2,10 +2,9 @@ const TelegramBot = require('node-telegram-bot-api');
 const bot = new TelegramBot(process.env.BOT_APIKEY, { polling: true });
 const axios = require('axios');
 const TinyURL = require('tinyurl');
-const fs = require('fs').promises;
+const fs = require('fs');
 const FILE_PATH = 'stats.txt';
 
-let pingCount = 0;
 // Welcome Message
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(
@@ -14,6 +13,18 @@ bot.onText(/\/start/, (msg) => {
     { parse_mode: 'Markdown' }
   );
 });
+
+let pingCount;
+
+// Get store Data
+try {
+  const dataBuffer = fs.readFileSync(FILE_PATH);
+  const dataJson = dataBuffer.toString();
+  const intCount = JSON.parse(dataJson);
+  pingCount = intCount.count;
+} catch (error) {
+  console.log(error);
+}
 
 // Process Music download
 bot.on('message', (msg) => {
@@ -26,17 +37,12 @@ bot.on('message', (msg) => {
     music !== '/stats' &&
     music !== '/donate'
   ) {
-    // store in object
-    pingCount++;
-
     // sAVE Request
-    (async () => {
-      await fs.writeFile(
-        FILE_PATH,
-        JSON.stringify({ count: pingCount }),
-        'utf8'
-      );
-    })();
+    try {
+      fs.writeFileSync(FILE_PATH, JSON.stringify({ count: pingCount++ }));
+    } catch (error) {
+      console.log(error);
+    }
 
     // Get Data
     (async () => {
@@ -104,15 +110,19 @@ bot.on('message', (msg) => {
 // Get number of Requets
 bot.onText(/\/stats/, (msg, match) => {
   let chatId = msg.chat.id;
+  let intCount;
 
-  (async () => {
-    const res = await fs.readFile(FILE_PATH, 'utf8');
-    const intData = JSON.parse(res);
+  try {
+    const dataBuffer = fs.readFileSync(FILE_PATH);
+    const dataJson = dataBuffer.toString();
+    intCount = JSON.parse(dataJson);
+  } catch (error) {
+    console.log(error);
+  }
 
-    bot.sendMessage(chatId, `Number of Requests: ${intData.count}`, {
-      parse_mode: 'Markdown',
-    });
-  })();
+  bot.sendMessage(chatId, `Number of Requests: ${intCount.count}`, {
+    parse_mode: 'Markdown',
+  });
 });
 
 // Get instructions
@@ -120,7 +130,7 @@ bot.onText(/\/donate/, (msg, match) => {
   let chatId = msg.chat.id;
   bot.sendMessage(
     chatId,
-    `Music Downloader Bot is free to use meaning you don't ever pay to use the service. However, we accept donations to keep our servers and scrapers working. Feel free to donate to the service with cryptocurrency ❤️ \n\nBitcoin: *${process.env.BitCOIN_ADDRESS}* \n\nEthereum: *${process.env.ETHEREUM_ADDRESS}* \n\nBitcoin Cash: *${process.env.BITCOINCASH_ADDRESS}*`,
+    `Music Downloader Bot is free to use meaning you don't ever pay to use the service. However, we accept donations to keep our servers and scrapers working. Feel free to donate to the service with cryptocurrency ❤️ \n\nBitcoin: *${process.env.BITCOIN_ADDRESS}* \n\nEthereum: *${process.env.ETHEREUM_ADDRESS}* \n\nBitcoin Cash: *${process.env.BITCOINCASH_ADDRESS}*`,
     {
       parse_mode: 'Markdown',
     }
