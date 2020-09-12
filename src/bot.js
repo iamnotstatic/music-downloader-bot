@@ -9,7 +9,13 @@ const FILE_PATH = 'stats.txt';
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(
     msg.chat.id,
-    `*Hi ${msg.from.first_name}*, Welcome to Music Downloader Bot! 🤖 \n \nTo download music you have to enter the music name eg. _Eminem godzilla._ `,
+    `*Hi ${msg.from.first_name}*, Welcome to Music Downloader Bot! 🤖 \n \n`,
+    { parse_mode: 'Markdown' }
+  );
+
+  bot.sendMessage(
+    msg.chat.id,
+    `What do you wanna do today🤗\n\nTo download music enter music name eg. _Eminem godzilla._ \n/help ℹ️\n/donate ❤️`,
     { parse_mode: 'Markdown' }
   );
 });
