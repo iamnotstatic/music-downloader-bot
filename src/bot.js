@@ -64,9 +64,7 @@ bot.on('message', (msg) => {
           parse_mode: 'Markdown',
         });
 
-        const res = await axios.get(
-          `http://youtube-scrape.herokuapp.com/api/search?q=${music} audio/`
-        );
+        const res = await axios.get(`${process.env.APP_URL}${music} audio/`);
 
         if (res.data.results.length === 0) {
           bot.sendMessage(
