@@ -13,15 +13,21 @@ bot.onText(/\/start/, (msg) => {
     { parse_mode: 'Markdown' }
   );
 
-  bot.sendMessage(
-    msg.chat.id,
-    `What do you wanna do today🤗\n\nTo download music enter music name eg. _Eminem godzilla._ \n/help ℹ️\n/donate ❤️`,
-    { parse_mode: 'Markdown' }
-  );
+  setTimeout(() => {
+    bot.sendMessage(
+      msg.chat.id,
+      `What do you wanna do today🤗\n\nTo download music enter music name eg. _Eminem godzilla._ \n/help ℹ️\n/donate ❤️`,
+      { parse_mode: 'Markdown' }
+    );
+  }, 1000);
 });
 
 let pingCount;
 
+// Check if file exits
+if (!fs.existsSync(FILE_PATH)) {
+  fs.writeFileSync(FILE_PATH, JSON.stringify({ count: '0' }));
+}
 // Get store Data
 try {
   const dataBuffer = fs.readFileSync(FILE_PATH);
