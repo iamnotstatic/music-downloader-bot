@@ -2,8 +2,6 @@ const TelegramBot = require('node-telegram-bot-api');
 const bot = new TelegramBot(process.env.BOT_APIKEY, { polling: true });
 const axios = require('axios');
 const TinyURL = require('tinyurl');
-const fs = require('fs');
-const FILE_PATH = 'stats.txt';
 
 // Welcome Message
 bot.onText(/\/start/, (msg) => {
@@ -22,22 +20,6 @@ bot.onText(/\/start/, (msg) => {
   }, 1000);
 });
 
-let pingCount;
-
-// Check if file exits
-if (!fs.existsSync(FILE_PATH)) {
-  fs.writeFileSync(FILE_PATH, JSON.stringify({ count: '0' }));
-}
-// Get store Data
-try {
-  const dataBuffer = fs.readFileSync(FILE_PATH);
-  const dataJson = dataBuffer.toString();
-  const intCount = JSON.parse(dataJson);
-  pingCount = intCount.count;
-} catch (error) {
-  console.log(error);
-}
-
 // Process Music download
 bot.on('message', (msg) => {
   let music = msg.text;
@@ -49,12 +31,7 @@ bot.on('message', (msg) => {
     music !== '/stats' &&
     music !== '/donate'
   ) {
-    // sAVE Request
-    try {
-      fs.writeFileSync(FILE_PATH, JSON.stringify({ count: pingCount++ }));
-    } catch (error) {
-      console.log(error);
-    }
+    
 
     // Get Data
     (async () => {
@@ -119,23 +96,6 @@ bot.on('message', (msg) => {
   }
 });
 
-// Get number of Requets
-bot.onText(/\/stats/, (msg, match) => {
-  let chatId = msg.chat.id;
-  let intCount;
-
-  try {
-    const dataBuffer = fs.readFileSync(FILE_PATH);
-    const dataJson = dataBuffer.toString();
-    intCount = JSON.parse(dataJson);
-  } catch (error) {
-    console.log(error);
-  }
-
-  bot.sendMessage(chatId, `Number of Requests: ${intCount.count}`, {
-    parse_mode: 'Markdown',
-  });
-});
 
 // Get instructions
 bot.onText(/\/donate/, (msg, match) => {
