@@ -1,6 +1,6 @@
 {
   "name": "music-bot",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Download music according to request with ease .",
   "main": "server.js",
   "scripts": {
